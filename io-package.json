@@ -1,8 +1,47 @@
 {
   "common": {
     "name": "rest-api",
-    "version": "2.0.1",
+    "version": "3.0.1",
     "news": {
+      "3.0.1": {
+        "en": "Corrected the web extension",
+        "de": "Korrektur der Web-Erweiterung",
+        "ru": "Исправлено расширение сайта",
+        "pt": "Corrigido a extensão web",
+        "nl": "De webextensie gecorrigeerd",
+        "fr": "Correction de l'extension web",
+        "it": "Corretto l'estensione web",
+        "es": "Corregido la extensión web",
+        "pl": "Poprawiono rozszerzenie sieci Web",
+        "uk": "Виправлено розширення веб",
+        "zh-cn": "更正网络扩展名"
+      },
+      "3.0.0": {
+        "en": "Rewritten in TypeScript\nRemoved binary states",
+        "de": "Neu geschrieben in TypeScript\nEntfernte binäre Zustände",
+        "ru": "Переписано в TypeScript\nУдаленные бинарные состояния",
+        "pt": "Reescrito em TypeScript\nEstados binários removidos",
+        "nl": "Herschreven in TypeScript\nBinaire toestanden verwijderd",
+        "fr": "Réécrit dans TypeScript\nÉtats binaires supprimés",
+        "it": "Rescritto in TypeScript\nStati binari rimossi",
+        "es": "Reescrito en TipoScript\nEstados binarios eliminados",
+        "pl": "Przepisane w TypeScript\nUsunięte stany binarne",
+        "uk": "Записатися в TypeScript\nВилучені бінарні штати",
+        "zh-cn": "在类型脚本中重写\n删除二进制状态"
+      },
+      "2.0.3": {
+        "en": "Changed response for the endpoint get states to the dictionary in swagger",
+        "de": "Geänderte Antwort für den Endpunkt erhalten Zustände zum Wörterbuch in Swagger",
+        "ru": "Измененный ответ для конечной точки получить состояния в словарь в swagger",
+        "pt": "Resposta alterada para o endpoint obter estados para o dicionário em swagger",
+        "nl": "Veranderde respons voor het eindpunt krijgt toestanden naar het woordenboek in swagger",
+        "fr": "Réponse modifiée pour le paramètre obtenir des états au dictionnaire dans swagger",
+        "it": "Cambiata risposta per il punto finale ottenere stati al dizionario in swagger",
+        "es": "Cambio de respuesta para el punto final conseguir estados al diccionario en swagger",
+        "pl": "Zmieniona odpowiedź na punkt końcowy uzyskać stany do słownika w swagger",
+        "uk": "Змінена відповідь на кінцеву точку, яка отримує штати словника в лебідці",
+        "zh-cn": "对端点的更改响应以 swagger 方式将状态变为字典"
+      },
       "2.0.1": {
         "en": "ported to `@iobroker/webserver`\nFixed history requests\nMinimum required node.js version is 16",
         "de": "an `@iobroker/webserver `\nGeschichtsanfragen behoben\nMinimum erforderlich node.js Version ist 16",
@@ -15,19 +54,6 @@
         "pl": "wysłany do '@ iobroker / webserver'\nPoprawione żądania dotyczące historii\nMinimalna wymagana node.js wersja jest 16",
         "uk": "сайт: www.iobroker.com й\nВиправлені запити історії\nМінімальний необхідний вузол.js версія 16",
         "zh-cn": "移植到 xqio 经纪人/网络服务器 `\n固定历史请求\n最低要求的节点.js版本为16"
-      },
-      "2.0.0": {
-        "en": "Fixed history requests\nMinimum required node.js version is 16",
-        "de": "Geschichtsanfragen behoben\nMinimum erforderlich node.js Version ist 16",
-        "ru": "Исправленные просьбы об истории\nМинимальная требуемая версия node.js - 16",
-        "pt": "Pedidos de histórico fixo\nA versão mínima necessária do node.js é 16",
-        "nl": "Vaste historische verzoeken\nMinimum vereiste node.js versie is 16",
-        "fr": "Demande d'historique fixe\nLa version minimum requise node.js est 16",
-        "it": "Risolte richieste di storia\nVersione minima richiesta node.js è 16",
-        "es": "Solicitudes de historia fija\nLa versión mínima requerida node.js es 16",
-        "pl": "Poprawione żądania dotyczące historii\nMinimalna wymagana node.js wersja jest 16",
-        "uk": "Виправлені запити історії\nМінімальний необхідний вузол.js версія 16",
-        "zh-cn": "固定历史请求\n最低要求的节点.js版本为16"
       },
       "1.1.0": {
         "en": "Converting of the setState values to the according type\nImplemented file operations",
@@ -65,36 +91,22 @@
         "it": "Controllare se la porta è occupata solo su interfaccia definita",
         "es": "Compruebe si el puerto está ocupado sólo en la interfaz definida",
         "pl": "Jeśli port jest zajęty tylko na określonym interfejsie",
+        "uk": "Перевірте, чи порт зайнятий лише на визначеному інтерфейсі",
         "zh-cn": "如果港口只在界定的界线上被占有,则该港口将被扣押。"
-      },
-      "1.0.2": {
-        "en": "Implemented binary read/write operations",
-        "de": "Implementierung binärer Schreib-/Lesevorgänge",
-        "ru": "Внедренные бинарные чтения / записи операции",
-        "pt": "Operações de leitura/escrita binárias implementadas",
-        "nl": "Geïmplementeerde binaire las/schrijf operaties",
-        "fr": "Opérations de lecture/écriture binaires mises en œuvre",
-        "it": "Operazioni di lettura/scrittura binarie implementate",
-        "es": "Operaciones de lectura y escritura binarias aplicadas",
-        "pl": "Poprawianie binarnego odczytu/pisania operacji",
-        "zh-cn": "执行本文的文字/仪式作业"
-      },
-      "1.0.1": {
-        "en": "Increased the max size of body to 100Mb",
-        "de": "Erhöht die maximale Körpergröße auf 100Mb",
-        "ru": "Увеличение максимального размера тела до 100Мб",
-        "pt": "Aumento do tamanho máximo do corpo para 100Mb",
-        "nl": "Verhoog de maximale grootte van lichaam tot 100MB",
-        "fr": "Augmentation de la taille maximale du corps à 100Mb",
-        "it": "Aumentata la dimensione massima del corpo a 100Mb",
-        "es": "Aumento del tamaño máximo del cuerpo a 100Mb",
-        "pl": "Zwiększono maksymalną wielkość ciała do 100 Mb",
-        "zh-cn": "提高机构规模,使之达到100千兆瓦"
       }
     },
-    "title": "REST API",
     "titleLang": {
-      "en": "REST API"
+      "en": "REST API",
+      "de": "REST API",
+      "ru": "REST API",
+      "pt": "REST API",
+      "nl": "REST API",
+      "fr": "REST API",
+      "it": "REST API",
+      "es": "REST API",
+      "pl": "REST API",
+      "uk": "REST API",
+      "zh-cn": "REST API"
     },
     "desc": {
       "en": "This adapter allows to read and write ioBroker objects and state with web RESTful API and Swagger UI",
@@ -106,6 +118,7 @@
       "it": "Questo adattatore consente di leggere e scrivere oggetti ioBroker e lo stato con l'API RESTful Web e l'interfaccia utente di Swagger",
       "es": "Este adaptador permite leer y escribir objetos y estados ioBroker con la API RESTful web y la interfaz de usuario Swagger",
       "pl": "Ten adapter pozwala na odczyt i zapis obiektów ioBroker oraz ich stan za pomocą web RESTful API i Swagger UI",
+      "uk": "Цей адаптер дозволяє читати та записувати об'єкти ioBroker та стан з веб RESTful API та Swagger UI",
       "zh-cn": "该适配器允许使用Web RESTful API和Swagger UI读写ioBroker对象和状态"
     },
     "authors": [
@@ -116,10 +129,9 @@
     "connectionType": "local",
     "dataSource": "push",
     "loglevel": "info",
-    "icon": "rest-api.png",
+    "icon": "rest-api.svg",
     "compact": true,
-    "materialize": true,
-    "webExtension": "lib/rest-api.js",
+    "webExtension": "dist/lib/rest-api.js",
     "readme": "https://github.com/ioBroker/ioBroker.rest-api/blob/master/README.md",
     "keywords": [
       "web",
@@ -129,10 +141,15 @@
       "communication"
     ],
     "enabled": true,
-    "extIcon": "https://raw.githubusercontent.com/ioBroker/ioBroker.rest-api/master/admin/rest-api.png",
+    "extIcon": "https://raw.githubusercontent.com/ioBroker/ioBroker.rest-api/master/admin/rest-api.svg",
     "type": "communication",
     "stopBeforeUpdate": true,
-    "localLink": "%protocol%://%ip%:%port%/",
+    "localLinks": {
+      "_default": {
+        "link": "%protocol%://%ip%:%port%/",
+        "intro": true
+      }
+    },
     "adminUI": {
       "config": "json"
     },
@@ -141,9 +158,14 @@
       "license": "Apache-2.0"
     },
     "tier": 3,
+    "globalDependencies": [
+      {
+        "admin": ">=7.4.10"
+      }
+    ],
     "dependencies": [
       {
-        "js-controller": ">=4.0.0"
+        "js-controller": ">=5.0.19"
       }
     ],
     "plugins": {
@@ -161,6 +183,7 @@
     "certPrivate": "",
     "certChained": "",
     "defaultUser": "admin",
+    "ttl": 3600,
     "onlyAllowWhenUserIsOwner": false,
     "webInstance": "",
     "leEnabled": false,
