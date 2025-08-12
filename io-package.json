@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "rest-api",
-    "version": "3.0.1",
+    "version": "3.0.9",
     "news": {
       "3.0.1": {
         "en": "Corrected the web extension",
