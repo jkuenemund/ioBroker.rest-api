@@ -88,8 +88,9 @@ export function subscribeState(req: RequestExt, res: Response): void {
             res.status(403).json({ error: error });
         } else {
             const params = parseUrl<{ stateId: string }>(req.url, req.swagger, req._adapter.WEB_EXTENSION_PREFIX);
-            let url = req.body.url;
-            if ((req.query && req.query.method === 'polling') || (req.body && req.body.method === 'polling')) {
+            const body: any = req.body && typeof req.body === 'object' ? req.body : {};
+            let url = body.url;
+            if ((req.query && req.query.method === 'polling') || (body && body.method === 'polling')) {
                 url = req.query.sid || req.headers['x-forwarded-for'] || req.socket.remoteAddress;
             }
 
@@ -104,22 +105,22 @@ export function subscribeState(req: RequestExt, res: Response): void {
             try {
                 const obj = await req._adapter.getForeignObjectAsync(params.stateId, { user: req._user });
                 if (!obj) {
-                    res.status(404).json({ error: 'object not found', url: req.body.url });
+                    res.status(404).json({ error: 'object not found', url: body.url });
                 } else if (obj.type !== 'state') {
                     res.status(500).json({
                         error: 'Cannot subscribe on non-state',
                         stateId: params.stateId,
                         type: obj.type,
-                        url: req.body.url,
+                        url: body.url,
                     });
                 } else {
                     const error = await req._swaggerObject.registerSubscribe(url, params.stateId, 'state', req._user, {
-                        method: req.query?.method || req.body?.method,
-                        delta: req.query?.delta || req.body?.delta,
-                        onchange: req.query?.onchange || req.body?.onchange,
+                        method: (req.query?.method as any) || body?.method,
+                        delta: (req.query?.delta as any) || body?.delta,
+                        onchange: (req.query?.onchange as any) || body?.onchange,
                     });
                     if (error) {
-                        errorResponse(req, res, error, { stateId: params.stateId, url: req.body.url });
+                        errorResponse(req, res, error, { stateId: params.stateId, url: body.url });
                         return;
                     }
                     const state = await req._adapter.getForeignStateAsync(params.stateId, { user: req._user });
@@ -434,8 +435,9 @@ export function unsubscribeState(req: RequestExt, res: Response): void {
         } else {
             const params = parseUrl<{ stateId: string }>(req.url, req.swagger, req._adapter.WEB_EXTENSION_PREFIX);
 
-            let url = req.body.url;
-            if (req.query?.method === 'polling' || req.body?.method === 'polling') {
+            const body: any = req.body && typeof req.body === 'object' ? req.body : {};
+            let url = body.url;
+            if (req.query?.method === 'polling' || body?.method === 'polling') {
                 url = req.query.sid || req.headers['x-forwarded-for'] || req.socket.remoteAddress;
             }
 
@@ -462,8 +464,9 @@ export function subscribeStates(req: RequestExt, res: Response): void {
         if (error) {
             errorResponse(req, res, error);
         } else {
-            let url = req.body.url;
-            if ((req.query && req.query.method === 'polling') || (req.body && req.body.method === 'polling')) {
+            const body: any = req.body && typeof req.body === 'object' ? req.body : {};
+            let url = body.url;
+            if ((req.query && req.query.method === 'polling') || (body && body.method === 'polling')) {
                 url = req.query.sid || req.headers['x-forwarded-for'] || req.socket.remoteAddress;
             }
 
@@ -475,7 +478,7 @@ export function subscribeStates(req: RequestExt, res: Response): void {
                 return;
             }
 
-            if (!req.body.pattern) {
+            if (!body.pattern) {
                 res.status(422).json({
                     error: 'pattern not provided',
                     expectedBody: { url: 'http://ipaddress:9000/hook/', pattern: 'system.adapter.admin.0.*' },
@@ -483,13 +486,13 @@ export function subscribeStates(req: RequestExt, res: Response): void {
                 return;
             }
             try {
-                await req._swaggerObject.registerSubscribe(url, req.body.pattern, 'state', req._user, {
-                    method: req.body.method,
-                    onchange: req.body.onchange === 'true',
-                    delta: req.body.delta !== undefined ? parseFloat(req.body.delta) : undefined,
+                await req._swaggerObject.registerSubscribe(url, body.pattern, 'state', req._user, {
+                    method: body.method,
+                    onchange: body.onchange === 'true' || body.onchange === true,
+                    delta: body.delta !== undefined ? parseFloat(body.delta) : undefined,
                 });
             } catch (error) {
-                errorResponse(req, res, error, { pattern: req.body.pattern, url: req.body.url });
+                errorResponse(req, res, error, { pattern: body.pattern, url: body.url });
             }
         }
     });
@@ -500,8 +503,9 @@ export function unsubscribeStates(req: RequestExt, res: Response): void {
         if (error) {
             errorResponse(req, res, error);
         } else {
-            let url = req.body.url;
-            if (req.body.method === 'polling') {
+            const body: any = req.body && typeof req.body === 'object' ? req.body : {};
+            let url = body.url;
+            if (body.method === 'polling') {
                 url = req.query.sid || req.headers['x-forwarded-for'] || req.socket.remoteAddress;
             }
 
@@ -513,10 +517,10 @@ export function unsubscribeStates(req: RequestExt, res: Response): void {
                 return;
             }
             try {
-                await req._swaggerObject.unregisterSubscribe(url, req.body.pattern, 'state', req._user);
+                await req._swaggerObject.unregisterSubscribe(url, body.pattern, 'state', req._user);
                 res.status(200).json({ result: 'OK' });
             } catch (error) {
-                errorResponse(req, res, error, { pattern: req.body.pattern, url: req.body.url });
+                errorResponse(req, res, error, { pattern: body.pattern, url: body.url });
             }
         }
     });
@@ -527,8 +531,9 @@ export function getStatesSubscribes(req: RequestExt, res: Response): void {
         if (error) {
             errorResponse(req, res, error);
         } else {
-            let url = req.body.url;
-            if ((req.query && req.query.method === 'polling') || (req.body && req.body.method === 'polling')) {
+            const body: any = req.body && typeof req.body === 'object' ? req.body : {};
+            let url = body.url;
+            if ((req.query && req.query.method === 'polling') || (body && body.method === 'polling')) {
                 url = req.query.sid || req.headers['x-forwarded-for'] || req.socket.remoteAddress;
             }
 
@@ -541,14 +546,14 @@ export function getStatesSubscribes(req: RequestExt, res: Response): void {
             }
 
             try {
-                const result = req._swaggerObject.getSubscribes(url, req.body.pattern, 'state');
+                const result = req._swaggerObject.getSubscribes(url, body.pattern, 'state');
                 if (result === null) {
                     res.status(404).json({ error: 'URL or session not found' });
                     return;
                 }
                 res.json({ states: result });
             } catch (error) {
-                errorResponse(req, res, error, { pattern: req.body.pattern, url: req.body.url });
+                errorResponse(req, res, error, { pattern: body.pattern, url: body.url });
             }
         }
     });
