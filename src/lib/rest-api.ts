@@ -264,6 +264,24 @@ export default class SwaggerUI {
     private commands: CommandsCommon | CommandsAdmin;
     private readonly defaultUser: `system.user.${string}`;
     private adminAcl: ioBroker.PermissionSet | undefined;
+    
+    private isPatternSubscribedElsewhere(id: string, type: 'state' | 'object', excludeUrlHash?: string): boolean {
+        const hashes = Object.keys(this.subscribes);
+        for (let i = 0; i < hashes.length; i++) {
+            const hash = hashes[i];
+            if (hash === excludeUrlHash) {
+                continue;
+            }
+            const list = this.subscribes[hash]?.[type];
+            if (!list || !list.length) {
+                continue;
+            }
+            if (list.find(item => item.id === id)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     constructor(
         server: HttpServer | HttpsServer,
@@ -1063,18 +1081,32 @@ export default class SwaggerUI {
                     // unsubscribe
                     if (this.subscribes[urlHash].state) {
                         for (let i = 0; i < this.subscribes[urlHash].state.length; i++) {
-                            this.adapter.log.debug(
-                                `[${this.subscribes[urlHash].urlHook}] unsubscribe from state: ${this.subscribes[urlHash].state[i].id}`,
-                            );
-                            await this.adapter.unsubscribeForeignStatesAsync(this.subscribes[urlHash].state[i].id);
+                            const pattern = this.subscribes[urlHash].state[i].id;
+                            if (!this.isPatternSubscribedElsewhere(pattern, 'state', urlHash)) {
+                                this.adapter.log.debug(
+                                    `[${this.subscribes[urlHash].urlHook}] unsubscribe from state: ${pattern}`,
+                                );
+                                await this.adapter.unsubscribeForeignStatesAsync(pattern);
+                            } else {
+                                this.adapter.log.debug(
+                                    `[${this.subscribes[urlHash].urlHook}] keep subscription for state: ${pattern} (still used elsewhere)`,
+                                );
+                            }
                         }
                     }
                     if (this.subscribes[urlHash].object) {
                         for (let i = 0; i < this.subscribes[urlHash].object.length; i++) {
-                            this.adapter.log.debug(
-                                `[${this.subscribes[urlHash].urlHook}] unsubscribe from object: ${this.subscribes[urlHash].object[i].id}`,
-                            );
-                            await this.adapter.unsubscribeForeignObjectsAsync(this.subscribes[urlHash].object[i].id);
+                            const pattern = this.subscribes[urlHash].object[i].id;
+                            if (!this.isPatternSubscribedElsewhere(pattern, 'object', urlHash)) {
+                                this.adapter.log.debug(
+                                    `[${this.subscribes[urlHash].urlHook}] unsubscribe from object: ${pattern}`,
+                                );
+                                await this.adapter.unsubscribeForeignObjectsAsync(pattern);
+                            } else {
+                                this.adapter.log.debug(
+                                    `[${this.subscribes[urlHash].urlHook}] keep subscription for object: ${pattern} (still used elsewhere)`,
+                                );
+                            }
                         }
                     }
 
@@ -1208,35 +1240,51 @@ export default class SwaggerUI {
                     pos = this.subscribes[urlHash][type].findIndex(item => item.id === id);
                     if (pos !== -1) {
                         this.subscribes[urlHash][type].splice(pos, 1);
-                        if (type === 'state') {
-                            this.adapter.log.debug(`Unsubscribe from state "${id}"`);
-                            await this.adapter.unsubscribeForeignStatesAsync(id, {
-                                user: user || 'system.user.admin',
-                                limitToOwnerRights: this.adapter.config.onlyAllowWhenUserIsOwner,
-                            }); // allow unsubscribing always
+                        const stillUsed = this.isPatternSubscribedElsewhere(id, type, urlHash);
+                        if (!stillUsed) {
+                            if (type === 'state') {
+                                this.adapter.log.debug(`Unsubscribe from state "${id}"`);
+                                await this.adapter.unsubscribeForeignStatesAsync(id, {
+                                    user: user || 'system.user.admin',
+                                    limitToOwnerRights: this.adapter.config.onlyAllowWhenUserIsOwner,
+                                });
+                            } else {
+                                this.adapter.log.debug(`Unsubscribe from object "${id}"`);
+                                await this.adapter.unsubscribeForeignObjectsAsync(id, {
+                                    user: user || 'system.user.admin',
+                                    limitToOwnerRights: this.adapter.config.onlyAllowWhenUserIsOwner,
+                                });
+                            }
                         } else {
-                            this.adapter.log.debug(`Unsubscribe from object "${id}"`);
-                            await this.adapter.unsubscribeForeignObjectsAsync(id, {
-                                user: user || 'system.user.admin',
-                                limitToOwnerRights: this.adapter.config.onlyAllowWhenUserIsOwner,
-                            }); // allow unsubscribing always
+                            this.adapter.log.debug(
+                                `Keep subscription for ${type} "${id}" (still used by another session)`,
+                            );
                         }
                     } else {
                         break;
                     }
                 } while (pos !== -1);
             } else {
-                for (let i = 0; i < this.subscribes[urlHash][type].length; i++) {
-                    if (type === 'state') {
-                        await this.adapter.unsubscribeForeignStatesAsync(this.subscribes[urlHash][type][i].id, {
-                            user: user || 'system.user.admin',
-                            limitToOwnerRights: this.adapter.config.onlyAllowWhenUserIsOwner,
-                        }); // allow unsubscribing always
+                const ids = this.subscribes[urlHash][type].map(item => item.id);
+                for (let i = 0; i < ids.length; i++) {
+                    const pattern = ids[i];
+                    const stillUsed = this.isPatternSubscribedElsewhere(pattern, type, urlHash);
+                    if (!stillUsed) {
+                        if (type === 'state') {
+                            await this.adapter.unsubscribeForeignStatesAsync(pattern, {
+                                user: user || 'system.user.admin',
+                                limitToOwnerRights: this.adapter.config.onlyAllowWhenUserIsOwner,
+                            });
+                        } else {
+                            await this.adapter.unsubscribeForeignObjectsAsync(pattern, {
+                                user: user || 'system.user.admin',
+                                limitToOwnerRights: this.adapter.config.onlyAllowWhenUserIsOwner,
+                            });
+                        }
                     } else {
-                        await this.adapter.unsubscribeForeignObjectsAsync(this.subscribes[urlHash][type][i].id, {
-                            user: user || 'system.user.admin',
-                            limitToOwnerRights: this.adapter.config.onlyAllowWhenUserIsOwner,
-                        }); // allow unsubscribing always
+                        this.adapter.log.debug(
+                            `Keep subscription for ${type} "${pattern}" (still used by another session)`,
+                        );
                     }
                 }
                 this.subscribes[urlHash][type] = [];
