@@ -267,6 +267,19 @@ export default class SwaggerUI {
 
     private isPatternSubscribedElsewhere(id: string, type: 'state' | 'object', excludeUrlHash?: string): boolean {
         const hashes = Object.keys(this.subscribes);
+        // Debug: list all active sessions with their hook (sid/IP or webhook URL) and patterns
+        try {
+            const overview: string[] = hashes.map(h => {
+                const sess = this.subscribes[h];
+                const hook = sess?.urlHook || h;
+                const statePatterns = (sess?.state || []).map(it => it.id).join(', ');
+                const objectPatterns = (sess?.object || []).map(it => it.id).join(', ');
+                return `[${hook}] states=[${statePatterns}] objects=[${objectPatterns}]`;
+            });
+            this.adapter.log.debug(`isPatternSubscribedElsewhere: active sessions: ${overview.join(' | ')}`);
+        } catch {
+            // ignore logging errors
+        }
         for (let i = 0; i < hashes.length; i++) {
             const hash = hashes[i];
             if (hash === excludeUrlHash) {
