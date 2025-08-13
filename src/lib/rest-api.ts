@@ -277,9 +277,12 @@ export default class SwaggerUI {
                 continue;
             }
             if (list.find(item => item.id === id)) {
+                const hook = this.subscribes[hash]?.urlHook || hash;
+                this.adapter.log.debug(`isPatternSubscribedElsewhere: ${type} "${id}" is still used by [${hook}]`);
                 return true;
             }
         }
+        this.adapter.log.debug(`isPatternSubscribedElsewhere: ${type} "${id}" not used by other sessions`);
         return false;
     }
 
